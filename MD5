@@ -1,0 +1,9 @@
+65f07fa0bc2b10c363442ea86b5b9fc6 *DESCRIPTION
+0d927145c5c3b9efad43340df55f60eb *LICENSE
+d9aec529c19fef3bfb96d5994b8ad53b *NAMESPACE
+b7995f13d990a60da26ab22b849ef6bb *R/main.R
+53904cac9f0b04689ad0a151d5316ff1 *README.md
+239b80b38bb3ef0ab6e299a03271b372 *man/figures/slash.png
+0b5571655beb11741cd64bca8a03d8ff *man/slash.Rd
+74537a62f88319c10d56cb8aa7ef8121 *tests/testthat.R
+2ea5158837b94c4a81121cd9f89be640 *tests/testthat/test-main.R
