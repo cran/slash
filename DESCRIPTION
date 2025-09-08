@@ -1,7 +1,7 @@
 Package: slash
 Type: Package
 Title: Path-Based Access and Manipulation of Nested Lists
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: 
     person(given = "Mohamed El Fodil",
            family = "Ihaddaden",
@@ -17,15 +17,16 @@ Description: Allows users to list data structures using path-based navigation.
     application where data naturally forms a tree-like structure.
 License: MIT + file LICENSE
 Encoding: UTF-8
-URL: https://github.com/feddelegrand7/slash
+URL: https://github.com/feddelegrand7/slash,
+        https://feddelegrand7.github.io/slash/
 BugReports: https://github.com/feddelegrand7/slash/issues
 Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.3.1
 Imports: R6
 NeedsCompilation: no
-Packaged: 2025-04-16 07:24:19 UTC; mohamedelfodilihaddaden
+Packaged: 2025-09-08 04:24:48 UTC; mohamedelfodilihaddaden
 Author: Mohamed El Fodil Ihaddaden [aut, cre]
 Maintainer: Mohamed El Fodil Ihaddaden <ihaddaden.fodeil@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-04-18 13:10:01 UTC
+Date/Publication: 2025-09-08 07:40:02 UTC

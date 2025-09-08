@@ -159,7 +159,33 @@ slash <- R6::R6Class(
     set_strict = function(strict) {
       private$.strict <- strict
       invisible(self)
+    },
+
+    #' @description Filter paths by regex pattern
+    #' @param pattern Regex pattern to match against paths
+    #' @param ignore_case TRUE to ignore cases, FALSE otherwise.
+    #' Defaults to FALSE.
+    #' @return Character vector of matching paths
+    filter_paths = function(pattern, ignore_case = FALSE) {
+      paths <- self$list_paths()
+      grep(pattern, paths, ignore.case = ignore_case, value = TRUE)
+    },
+
+    #' @description Print a tree-like diagram of the list structure
+    #' @param path Optional starting path (NULL for root)
+    #'
+    print_tree = function(path = NULL) {
+      if (!is.null(path) && !self$exists(path)) {
+        stop(sprintf("Path '%s' not found", path))
+      }
+
+      start_data <- self$get(path)
+      start_label <- if (is.null(path)) "\033[1;36m<root>\033[0m" else paste0("\033[1;36m", path, "\033[0m")
+
+      cat(start_label, "\n")
+      private$.print_tree_recursive(start_data, prefix = "")
     }
+
   ),
 
   private = list(
@@ -306,31 +332,63 @@ slash <- R6::R6Class(
         return(character(0))
       }
 
-      if (is.null(names(data))) {
-        for (i in seq_along(data)) {
-          new_path <- if (nzchar(current_path)) paste0(current_path, "/", i) else as.character(i)
+      keys <- names(data)
+      for (i in seq_along(data)) {
+        # Determine the key: use name if available, else numeric index
+        key <- if (!is.null(keys) && !is.na(keys[i]) && nzchar(keys[i])) keys[i] else as.character(i)
 
-          if (is.list(data[[i]])) {
-            paths <- c(paths, new_path)
-            paths <- c(paths, private$.find_paths(data[[i]], new_path))
-          } else {
-            paths <- c(paths, new_path)
-          }
-        }
-      } else {
-        for (name in names(data)) {
-          new_path <- if (nzchar(current_path)) paste0(current_path, "/", name) else name
+        new_path <- if (nzchar(current_path)) paste0(current_path, "/", key) else key
 
-          if (is.list(data[[name]])) {
-            paths <- c(paths, new_path)
-            paths <- c(paths, private$.find_paths(data[[name]], new_path))
-          } else {
-            paths <- c(paths, new_path)
-          }
+        if (is.list(data[[i]])) {
+          paths <- c(paths, new_path)
+          paths <- c(paths, private$.find_paths(data[[i]], new_path))
+        } else {
+          paths <- c(paths, new_path)
         }
       }
 
       unique(paths)
+    },
+
+    .print_tree_recursive = function(x, prefix = "") {
+      if (!is.list(x)) {
+        cat(prefix, "\033[1;33m", as.character(x), "\033[0m\n", sep = "")
+        return()
+      }
+
+      keys <- names(x)
+      if (length(x) == 0) {
+        cat(prefix, "\033[1;31m<empty>\033[0m\n", sep = "")
+        return()
+      }
+
+      for (i in seq_along(x)) {
+        is_last <- i == length(x)
+        key <- if (!is.null(keys) && !is.na(keys[i]) && nzchar(keys[i])) keys[i] else as.character(i)
+        val <- x[[i]]
+
+        # Draw the tree structure with ASCII characters
+        if (is_last) {
+          cat(prefix, "\033[1;34m`-- \033[0m", sep = "")
+          new_prefix <- paste0(prefix, "    ")
+        } else {
+          cat(prefix, "\033[1;34m|-- \033[0m", sep = "")
+          new_prefix <- paste0(prefix, "\033[1;34m|   \033[0m")
+        }
+
+        # Colorize the key
+        colored_key <- paste0("\033[1;32m", key, "\033[0m")
+
+        if (is.list(val)) {
+          # For lists, show the key and recurse
+          cat(colored_key, "\033[1;35m:\033[0m\n", sep = "")
+          private$.print_tree_recursive(val, new_prefix)
+        } else {
+          # For values, show key: value
+          val_str <- if (is.null(val)) "\033[1;31mNULL\033[0m" else paste0("\033[1;33m", as.character(val), "\033[0m")
+          cat(colored_key, "\033[1;35m:\033[0m ", val_str, "\n", sep = "")
+        }
+      }
     }
   )
 )
